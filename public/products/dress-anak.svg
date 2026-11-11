@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#f9e8ee"/><stop offset="1" stop-color="#efc8d7"/></linearGradient>
+    <linearGradient id="cloth" x2="0" y2="1"><stop stop-color="#f5d6e0"/><stop offset="1" stop-color="#e8adc1"/></linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <path d="M185 133c44-40 87-60 130-60s86 20 130 60" fill="none" stroke="#bd7890" stroke-width="8" stroke-linecap="round"/>
+  <path d="M307 138c15-17 31-25 46-25s31 8 46 25l42 133 94 185H215l94-185z" fill="url(#cloth)" stroke="#c4859b" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M307 138c7 42 22 64 46 64s39-22 46-64M297 274h112" fill="none" stroke="#c4859b" stroke-width="7"/>
+  <g fill="#fff9ee" stroke="#dba0b2" stroke-width="3"><circle cx="291" cy="335" r="17"/><circle cx="359" cy="370" r="17"/><circle cx="421" cy="329" r="17"/><circle cx="468" cy="386" r="17"/><circle cx="315" cy="420" r="17"/></g>
+  <g fill="#e9ad5b"><circle cx="291" cy="335" r="5"/><circle cx="359" cy="370" r="5"/><circle cx="421" cy="329" r="5"/><circle cx="468" cy="386" r="5"/><circle cx="315" cy="420" r="5"/></g>
+  <text x="400" y="550" fill="#89586b" font-family="sans-serif" font-size="24" font-weight="700" text-anchor="middle" letter-spacing="5">LITTLE FLOWER DRESS</text>
+</svg>

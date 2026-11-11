@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f2e9db"/><stop offset="1" stop-color="#d9cbb4"/></linearGradient>
+    <linearGradient id="cloth" x2="0" y2="1"><stop stop-color="#b9a78e"/><stop offset="1" stop-color="#8f7a62"/></linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="625" cy="115" r="88" fill="#fff9ed" opacity=".6"/>
+  <path d="m309 137 91 36 91-36 95 65-55 82-50-31v207H319V253l-50 31-55-82z" fill="url(#cloth)" stroke="#786852" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M400 173v287m-44-277 44 92 44-92" fill="none" stroke="#e7dcc9" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M356 287h88M356 385h88" stroke="#786852" stroke-width="5"/>
+  <g fill="#ddcda9"><circle cx="411" cy="300" r="5"/><circle cx="411" cy="325" r="5"/><circle cx="411" cy="350" r="5"/></g>
+  <text x="400" y="550" fill="#675b49" font-family="sans-serif" font-size="24" font-weight="700" text-anchor="middle" letter-spacing="5">SOFT KNIT / ONE SIZE</text>
+</svg>

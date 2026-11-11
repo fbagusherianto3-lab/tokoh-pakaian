@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f6e8df"/><stop offset="1" stop-color="#eed1c0"/></linearGradient>
+    <linearGradient id="cloth" x2="0" y2="1"><stop stop-color="#f5eee4"/><stop offset="1" stop-color="#e6c6b6"/></linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <path d="M185 140c41-42 82-63 123-63s82 21 123 63" fill="none" stroke="#b98267" stroke-width="8" stroke-linecap="round"/>
+  <path d="M310 143c15-17 30-26 45-26s30 9 45 26l50 157 100 156H200l100-156z" fill="url(#cloth)" stroke="#bd8c78" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M310 143c6 44 21 68 45 68s39-24 45-68M300 294h110" fill="none" stroke="#bd8c78" stroke-width="7"/>
+  <g fill="#c97b72"><circle cx="290" cy="348" r="11"/><circle cx="345" cy="389" r="9"/><circle cx="402" cy="340" r="12"/><circle cx="452" cy="394" r="10"/><circle cx="370" cy="443" r="11"/><circle cx="260" cy="421" r="8"/><circle cx="430" cy="316" r="7"/></g>
+  <g fill="#78917c"><path d="M287 338q-18-20-24-6 7 15 24 6m5 5q18-20 24-6-7 15-24 6M398 330q-18-20-24-6 7 15 24 6m5 5q18-20 24-6-7 15-24 6"/></g>
+  <text x="400" y="550" fill="#825d50" font-family="sans-serif" font-size="24" font-weight="700" text-anchor="middle" letter-spacing="5">SUMMER BLOOM</text>
+</svg>

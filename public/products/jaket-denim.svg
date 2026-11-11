@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#e4edf1"/><stop offset="1" stop-color="#bfd0d9"/></linearGradient>
+    <linearGradient id="denim" x2="1" y2="1"><stop stop-color="#7199ae"/><stop offset="1" stop-color="#41667e"/></linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <path d="m311 136 89 32 89-32 98 67-56 83-47-30v205H316V256l-47 30-56-83z" fill="url(#denim)" stroke="#345568" stroke-width="9" stroke-linejoin="round"/>
+  <path d="m350 149 50 62 50-62-50 24zM400 211v250M312 258v202M488 258v202" fill="none" stroke="#d7e2e4" stroke-width="7"/>
+  <path d="M333 284h49v70h-49zm85 0h49v70h-49z" fill="#5a8095" stroke="#d7e2e4" stroke-width="5"/>
+  <path d="M356 301h4m49 0h4m-53 27h4m49 0h4" stroke="#e1cf9d" stroke-width="8" stroke-linecap="round"/>
+  <text x="400" y="550" fill="#385a6c" font-family="sans-serif" font-size="24" font-weight="700" text-anchor="middle" letter-spacing="5">VINTAGE DENIM</text>
+</svg>

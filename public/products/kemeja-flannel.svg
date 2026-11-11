@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#e6edf0"/><stop offset="1" stop-color="#cbd8dc"/></linearGradient>
+    <pattern id="check" width="70" height="70" patternUnits="userSpaceOnUse"><path d="M0 0h70v70H0z" fill="#9d4f45"/><path d="M0 0h35v35H0zm35 35h35v35H35z" fill="#f1d7bc"/><path d="M0 30h70v10H0zM30 0h10v70H30z" fill="#263e4d" opacity=".85"/></pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="180" cy="115" r="80" fill="#f9f5ed" opacity=".7"/>
+  <path d="m316 123 84 32 84-32 103 66-59 90-52-31v215H324V248l-52 31-59-90z" fill="url(#check)" stroke="#344c56" stroke-width="8" stroke-linejoin="round"/>
+  <path d="m356 136 44 53 44-53-44 36z" fill="#f4e4d0" stroke="#344c56" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M400 174v319M385 222h12m-12 38h12m-12 38h12m-12 38h12" stroke="#f3e7d9" stroke-width="6"/>
+  <text x="400" y="550" fill="#344c56" font-family="sans-serif" font-size="24" font-weight="700" text-anchor="middle" letter-spacing="5">FLANNEL EDITION</text>
+</svg>

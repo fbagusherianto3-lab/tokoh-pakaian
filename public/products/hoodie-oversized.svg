@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#e8e4ed"/><stop offset="1" stop-color="#cbc4d7"/></linearGradient>
+    <linearGradient id="cloth" x2="0" y2="1"><stop stop-color="#5a536d"/><stop offset="1" stop-color="#373247"/></linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="610" cy="165" r="115" fill="#f7f3fa" opacity=".58"/>
+  <path d="M331 156c-28 15-51 26-75 41l-77 122 73 45 54-66v177h188V298l54 66 73-45-77-122c-24-15-47-26-75-41-19 41-42 61-69 61s-50-20-69-61z" fill="url(#cloth)" stroke="#302a3d" stroke-width="9" stroke-linejoin="round"/>
+  <path d="M331 156c2 67 22 107 69 107s67-40 69-107c-16-27-38-44-69-44s-53 17-69 44z" fill="#777084" stroke="#302a3d" stroke-width="8"/>
+  <path d="M360 167c8 35 22 53 40 53s32-18 40-53" fill="none" stroke="#b1aabd" stroke-width="6"/>
+  <path d="M334 405h132v49H334z" fill="#494355" stroke="#302a3d" stroke-width="6"/>
+  <text x="400" y="550" fill="#4a4358" font-family="sans-serif" font-size="24" font-weight="700" text-anchor="middle" letter-spacing="5">OVERSIZED / EVERYDAY</text>
+</svg>
