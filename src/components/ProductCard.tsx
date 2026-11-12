@@ -81,14 +81,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
       </div>
 
-      <div
-        style={{
-          padding: "16px",
-          display: "flex",
-          flexDirection: "column",
-          flex: 1,
-        }}
-      >
+      <div className="product-card-content">
         <span style={{ fontSize: "11px", color: "#3b82f6", fontWeight: 700 }}>
           {product.category}
         </span>

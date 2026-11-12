@@ -29,41 +29,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   return (
     <header className="header-bar">
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          minWidth: 0,
-        }}
-      >
-        <span
-          style={{
-            fontSize: "20px",
-            fontWeight: "800",
-            whiteSpace: "nowrap",
-          }}
-        >
+      <div className="header-brand">
+        <span className="store-brand">
           👕 TOKO PAKAIAN BAGUS &amp; TASYA
         </span>
-        <span
-          style={{
-            background: "#334155",
-            color: "#cbd5e1",
-            padding: "3px 9px",
-            borderRadius: "12px",
-            fontSize: "11px",
-            whiteSpace: "nowrap",
-          }}
-        >
+        {" "}
+        <span className="role-badge">
           {role}
         </span>
       </div>
 
-      <div
-        className="header-actions"
-        style={{ display: "flex", gap: "8px" }}
-      >
+      <nav className="header-actions" aria-label="Navigasi toko">
         {canManageStore && (
           <button
             type="button"
@@ -110,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         >
           Keluar
         </button>
-      </div>
+      </nav>
     </header>
   );
 };

@@ -104,8 +104,16 @@ const LEGACY_REMOTE_PRODUCT_IMAGES = new Set([
   "https://parto.id/asset/foto_produk/WhatsApp_Image_2022-12-13_at_20_26_26.jpeg",
   "https://th.bing.com/th/id/OIP.nTF3YjJmIYhs8PXn1zIf5QHaHa?w=201&h=200&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3",
 ]);
-const DEMO_BRI_ACCOUNT_NUMBER = "BRI-DEMO-0001";
-const DEMO_BRI_ACCOUNT_NAME = "Toko Pakaian (Simulasi)";
+const STORE_WHATSAPP_NUMBER = (
+  import.meta.env.VITE_STORE_WHATSAPP_NUMBER ?? ""
+).replace(/\D/g, "");
+const STORE_BANK_NAME = import.meta.env.VITE_STORE_BANK_NAME?.trim() ?? "";
+const STORE_ACCOUNT_NUMBER =
+  import.meta.env.VITE_STORE_ACCOUNT_NUMBER?.trim() ?? "";
+const STORE_ACCOUNT_HOLDER =
+  import.meta.env.VITE_STORE_ACCOUNT_HOLDER?.trim() ?? "";
+const hasStoreBankAccount =
+  Boolean(STORE_BANK_NAME && STORE_ACCOUNT_NUMBER && STORE_ACCOUNT_HOLDER);
 
 // =====================================================
 // MAIN APP
@@ -118,6 +126,7 @@ export default function App() {
 
   const [currentUser, setCurrentUser] =
     useState<CurrentUser | null>(null);
+    
 
   const [loginForm, setLoginForm] = useState({
     username: "",
@@ -726,11 +735,48 @@ export default function App() {
       }
     }
 
+    if (
+      paymentMethod === "Checkout WhatsApp" &&
+      !/^\d{9,15}$/.test(STORE_WHATSAPP_NUMBER)
+    ) {
+      showToast(
+        "Nomor WhatsApp toko belum dikonfigurasi. Atur VITE_STORE_WHATSAPP_NUMBER di file .env.local.",
+      );
+      return;
+    }
+
     checkoutInProgress.current = true;
 
     const orderId = createOrderId(
       new Set(orders.map((order) => order.id)),
     );
+
+    if (paymentMethod === "Checkout WhatsApp") {
+      const message = [
+        "Halo Toko Pakaian Bagus & Tasya, saya ingin memesan:",
+        `Nama: ${currentUser.name}`,
+        `Nomor pesanan: ${orderId}`,
+        ...cart.map(
+          (item) =>
+            `- ${item.product.name} (ukuran ${item.selectedSize}) x${item.quantity} = ${formatRupiah(item.product.price * item.quantity)}`,
+        ),
+        `Total: ${formatRupiah(totalCartPrice)}`,
+        "Mohon konfirmasi ketersediaan dan cara pembayaran. Terima kasih.",
+      ].join("\n");
+      const whatsappWindow = window.open(
+        `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
+        "_blank",
+      );
+
+      if (!whatsappWindow) {
+        checkoutInProgress.current = false;
+        showToast("WhatsApp tidak dapat dibuka. Izinkan pop-up lalu coba lagi.");
+        return;
+      }
+
+      whatsappWindow.opener = null;
+    }
+
     const orderCreatedAt = new Date();
 
     const newOrder: OrderItem = {
@@ -793,7 +839,11 @@ export default function App() {
     setIsCartOpen(false);
     setIsOrdersOpen(true);
 
-    showToast("Pesanan berhasil dibuat!");
+    showToast(
+      paymentMethod === "Checkout WhatsApp"
+        ? "Pesanan disiapkan. Periksa dan kirim pesan melalui WhatsApp."
+        : "Pesanan berhasil dibuat!",
+    );
   };
 
   // ===================================================
@@ -1836,11 +1886,6 @@ export default function App() {
           color: #21162c;
         }
 
-        .header-bar > div:first-child > span:first-child {
-          letter-spacing: .08em;
-          font-size: 15px !important;
-        }
-
         .layout-container {
           max-width: 1360px;
           margin: 0 auto;
@@ -2003,27 +2048,30 @@ export default function App() {
         }
 
         .size-text {
-          background: transparent;
-          border: none;
-          padding: 2px 6px;
+          min-width: 34px;
+          min-height: 32px;
+          padding: 5px 9px;
+          background: #fffefa;
+          border: 1px solid #e7e6dc;
           font-size: 12px;
           font-weight: 600;
-          color: #71657b;
+          color: #486253;
           cursor: pointer;
-          border-radius: 7px;
-          transition: color .15s ease, background .15s ease;
+          border-radius: 8px;
+          transition: color .15s ease, background .15s ease, border-color .15s ease;
         }
 
         .size-text:hover {
-          color: #6d28d9;
-          background: #f1eafd;
+          color: #173d30;
+          border-color: #9cb09c;
+          background: #f1f5ee;
         }
 
         .size-text.selected {
-          color: #6d28d9;
+          color: #fff9ec;
+          border-color: #173d30;
+          background: #173d30;
           font-weight: 800;
-          text-decoration: underline;
-          text-underline-offset: 4px;
         }
 
         .drawer-overlay {
@@ -2312,8 +2360,9 @@ export default function App() {
 
           .header-actions {
             width: 100%;
-            overflow-x: auto;
-            padding-bottom: 3px;
+            overflow: visible;
+            padding-bottom: 0;
+            justify-content: flex-start;
           }
 
           .catalog-head {
@@ -3078,17 +3127,7 @@ export default function App() {
 
                     {/* PRODUCT CONTENT */}
 
-                    <div
-                      style={{
-                        padding:
-                          "16px",
-                        display:
-                          "flex",
-                        flexDirection:
-                          "column",
-                        flex: 1,
-                      }}
-                    >
+                    <div className="product-card-content">
                       <span
                         style={{
                           fontSize:
@@ -3166,6 +3205,7 @@ export default function App() {
                           {product.sizes.map(
                             (size) => (
                               <button
+                                type="button"
                                 key={
                                   size
                                 }
@@ -3175,6 +3215,7 @@ export default function App() {
                                     ? "selected"
                                     : ""
                                 }`}
+                                aria-pressed={selectedSize === size}
                                 onClick={() =>
                                   selectSize(
                                     product.id,
@@ -3337,30 +3378,39 @@ export default function App() {
             }
           />
 
-          <div className="drawer-content">
+          <div className="drawer-content cart-drawer">
             <div
-              style={{
-                display:
-                  "flex",
-                justifyContent:
-                  "space-between",
-                alignItems:
-                  "center",
-                marginBottom:
-                  "20px",
-              }}
+              className="cart-header"
             >
-              <h3
-                style={{
-                  margin: 0,
-                }}
-              >
-                🛒 Keranjang Belanja (
-                {totalCartCount})
-              </h3>
+              <div>
+                <span className="cart-kicker">PESANAN ANDA</span>
+                <h3>
+                  Keranjang Belanja
+                  <span className="cart-count">{totalCartCount}</span>
+                </h3>
+              </div>
+
+              <div className="cart-header-account">
+                {hasStoreBankAccount ? (
+                  <>
+                    <span className="bank-account-label">REKENING TOKO</span>
+                    <strong className="bank-account-number">
+                      {STORE_ACCOUNT_NUMBER}
+                    </strong>
+                    <span>
+                      {STORE_BANK_NAME} · a.n. {STORE_ACCOUNT_HOLDER}
+                    </span>
+                  </>
+                ) : (
+                  <span className="cart-account-missing">
+                    Nomor rekening belum diatur
+                  </span>
+                )}
+              </div>
 
               <button
                 className="close-btn"
+                aria-label="Tutup keranjang"
                 onClick={() =>
                   setIsCartOpen(false)
                 }
@@ -3370,62 +3420,12 @@ export default function App() {
             </div>
 
             {cart.length === 0 ? (
-              <div
-                style={{
-                  textAlign:
-                    "center",
-                  color:
-                    "#94a3b8",
-                  marginTop:
-                    "40px",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize:
-                      "40px",
-                    margin: 0,
-                  }}
-                >
-                  🛍️
-                </p>
-
+              <div className="cart-empty">
+                <span className="cart-empty-icon">🛍️</span>
+                <h4>Keranjang masih kosong</h4>
                 <p>
-                  Keranjang belanja
-                  Anda masih kosong.
+                  Yuk, pilih pakaian favoritmu dan tambahkan ke keranjang.
                 </p>
-                <p style={{ fontSize: "13px", lineHeight: 1.6 }}>
-                  Tambahkan produk terlebih dahulu untuk memilih pembayaran seperti ATM BRI,
-                  QRIS, kartu, atau PayLater simulasi.
-                </p>
-                <div
-                  style={{
-                    margin: "8px 0 16px",
-                    padding: "14px",
-                    width: "100%",
-                    border: "1px solid #bfdbfe",
-                    borderRadius: "10px",
-                    background: "#eff6ff",
-                    color: "#1e3a8a",
-                    fontSize: "13px",
-                    lineHeight: 1.7,
-                    textAlign: "left",
-                  }}
-                >
-                  <strong>Contoh tujuan transfer BRI (simulasi)</strong>
-                  <div>Bank: BRI</div>
-                  <div>
-                    Nama rekening: <strong>{DEMO_BRI_ACCOUNT_NAME}</strong>
-                  </div>
-                  <div>
-                    Nomor rekening: <strong>{DEMO_BRI_ACCOUNT_NUMBER}</strong>
-                  </div>
-                  <p style={{ margin: "8px 0 0" }}>
-                    Nomor ini hanya contoh dan bukan rekening/BRIVA aktif. Jangan transfer uang
-                    sungguhan. Pada ATM/BRImo sungguhan, pilih Transfer atau BRIVA, periksa nama
-                    penerima, lalu masukkan nominal tagihan.
-                  </p>
-                </div>
                 <button
                   className="action-btn primary"
                   onClick={() => setIsCartOpen(false)}
@@ -3436,34 +3436,13 @@ export default function App() {
             ) : (
               <>
                 <div
-                  style={{
-                    flex: 1,
-                    overflowY:
-                      "auto",
-                    display:
-                      "flex",
-                    flexDirection:
-                      "column",
-                    gap:
-                      "12px",
-                    paddingRight:
-                      "4px",
-                  }}
+                  className="cart-items"
                 >
                   {cart.map(
                     (item) => (
                       <div
                         key={`${item.product.id}-${item.selectedSize}`}
-                        style={{
-                          display:
-                            "flex",
-                          gap:
-                            "12px",
-                          borderBottom:
-                            "1px solid #f1f5f9",
-                          paddingBottom:
-                            "12px",
-                        }}
+                        className="cart-item"
                       >
                         <img
                           src={
@@ -3478,42 +3457,12 @@ export default function App() {
                             event.currentTarget.onerror = null;
                             event.currentTarget.src = DEFAULT_PRODUCT_IMAGE;
                           }}
-                          style={{
-                            width:
-                              "60px",
-                            height:
-                              "60px",
-                            borderRadius:
-                              "8px",
-                            objectFit:
-                              "cover",
-                          }}
+                          className="cart-item-image"
                         />
 
-                        <div
-                          style={{
-                            flex: 1,
-                            minWidth: 0,
-                          }}
-                        >
-                          <div
-                            style={{
-                              display:
-                                "flex",
-                              justifyContent:
-                                "space-between",
-                              alignItems:
-                                "flex-start",
-                            }}
-                          >
-                            <h5
-                              style={{
-                                margin:
-                                  "0 0 4px",
-                                fontSize:
-                                  "14px",
-                              }}
-                            >
+                        <div className="cart-item-details">
+                          <div className="cart-item-heading">
+                            <h5>
                               {
                                 item
                                   .product
@@ -3523,10 +3472,7 @@ export default function App() {
 
                             <button
                               className="close-btn"
-                              style={{
-                                fontSize:
-                                  "14px",
-                              }}
+                              aria-label={`Hapus ${item.product.name} dari keranjang`}
                               onClick={() =>
                                 removeCartItem(
                                   item
@@ -3541,14 +3487,7 @@ export default function App() {
                           </div>
 
                           <div
-                            style={{
-                              fontSize:
-                                "12px",
-                              color:
-                                "#64748b",
-                              marginBottom:
-                                "6px",
-                            }}
+                            className="cart-item-meta"
                           >
                             Ukuran:{" "}
                             <b>
@@ -3565,17 +3504,11 @@ export default function App() {
                           </div>
 
                           <div
-                            style={{
-                              display:
-                                "flex",
-                              alignItems:
-                                "center",
-                              gap:
-                                "6px",
-                            }}
+                            className="cart-item-controls"
                           >
                             <button
                               className="qty-text-btn"
+                              aria-label={`Kurangi jumlah ${item.product.name}, ukuran ${item.selectedSize}`}
                               onClick={() =>
                                 updateCartQty(
                                   item
@@ -3589,14 +3522,7 @@ export default function App() {
                               -
                             </button>
 
-                            <span
-                              style={{
-                                fontSize:
-                                  "13px",
-                                fontWeight:
-                                  "bold",
-                              }}
-                            >
+                            <span className="cart-item-quantity">
                               {
                                 item.quantity
                               }
@@ -3604,6 +3530,7 @@ export default function App() {
 
                             <button
                               className="qty-text-btn"
+                              aria-label={`Tambah jumlah ${item.product.name}, ukuran ${item.selectedSize}`}
                               onClick={() =>
                                 updateCartQty(
                                   item
@@ -3618,19 +3545,7 @@ export default function App() {
                             </button>
 
                             <button
-                              style={{
-                                border: 0,
-                                background:
-                                  "none",
-                                color:
-                                  "#ef4444",
-                                fontSize:
-                                  "12px",
-                                cursor:
-                                  "pointer",
-                                marginLeft:
-                                  "auto",
-                              }}
+                              className="cart-item-remove"
                               onClick={() =>
                                 removeCartItem(
                                   item
@@ -3652,32 +3567,15 @@ export default function App() {
                 {/* PAYMENT */}
 
                 <div
-                  style={{
-                    borderTop:
-                      "1px solid #e2e8f0",
-                    paddingTop:
-                      "16px",
-                    marginTop:
-                      "16px",
-                  }}
+                  className="cart-checkout"
                 >
-                  <label
-                    style={{
-                      fontSize:
-                        "12px",
-                      fontWeight:
-                        "bold",
-                      display:
-                        "block",
-                      marginBottom:
-                        "6px",
-                    }}
-                  >
+                  <label className="payment-label" htmlFor="cart-payment-method">
                     Metode Pembayaran
                   </label>
 
                   <select
-                    className="form-input"
+                    id="cart-payment-method"
+                    className="form-input cart-payment-select"
                     value={
                       paymentMethod
                     }
@@ -3692,10 +3590,10 @@ export default function App() {
                     }
                   >
                     <option value="Transfer BRI (ATM/BRImo)">
-                      Transfer BRI (ATM/BRImo)
+                      Transfer {STORE_BANK_NAME || "bank tujuan toko"}
                     </option>
                     <option value="Transfer Bank Lain">
-                      Transfer bank lain
+                      Transfer dari bank lain
                     </option>
                     <option value="QRIS / e-Wallet">
                       QRIS / e-Wallet
@@ -3709,56 +3607,53 @@ export default function App() {
                     <option value="Tunai / Kasir">
                       Tunai (Bayar di kasir)
                     </option>
+                    <option value="Checkout WhatsApp">
+                      Checkout otomatis ke WhatsApp
+                    </option>
                   </select>
 
                   <div
-                    style={{
-                      marginTop: "10px",
-                      padding: "12px",
-                      borderRadius: "8px",
-                      background: "#eff6ff",
-                      color: "#1e3a8a",
-                      fontSize: "12px",
-                      lineHeight: 1.6,
-                    }}
+                    className="payment-info"
                   >
-                    <strong>Instruksi pembayaran simulasi</strong>
-                    {paymentMethod === "Transfer BRI (ATM/BRImo)" && (
+                    <strong>
+                      {paymentMethod === "Checkout WhatsApp"
+                        ? "Checkout melalui WhatsApp"
+                        : "Instruksi pembayaran simulasi"}
+                    </strong>
+                    {paymentMethod === "Checkout WhatsApp" && (
                       <p style={{ margin: "6px 0 0" }}>
-                        Tujuan transfer contoh:
-                        <br />
-                        Bank: <strong>BRI</strong>
-                        <br />
-                        Nama rekening: <strong>{DEMO_BRI_ACCOUNT_NAME}</strong>
-                        <br />
-                        Nomor rekening: <strong>{DEMO_BRI_ACCOUNT_NUMBER}</strong>
-                        <br />
-                        Nomor di atas tidak aktif dan hanya untuk demo. Dalam transaksi sungguhan,
-                        pilih Transfer/BRIVA melalui ATM BRI atau BRImo, pastikan nama penerima
-                        benar, lalu masukkan jumlah sesuai total tagihan.
+                        Setelah checkout, WhatsApp akan terbuka dengan detail pesanan. Periksa
+                        lalu kirim pesan untuk mengirim pesanan ke toko. Pembayaran belum
+                        diproses otomatis.
+                      </p>
+                    )}
+                    {paymentMethod === "Transfer BRI (ATM/BRImo)" && (
+                      <p>
+                        Transfer ke rekening toko yang tertera di bagian atas. Pastikan nama
+                        penerima sesuai sebelum melakukan transfer.
                       </p>
                     )}
                     {paymentMethod === "Transfer Bank Lain" && (
-                      <p style={{ margin: "6px 0 0" }}>
-                        Gunakan menu transfer antarbank pada aplikasi bank Anda. Nomor rekening
-                        dan konfirmasi transfer tidak diproses oleh aplikasi demo ini.
+                      <p>
+                        Gunakan menu transfer antarbank ke rekening toko yang tertera di bagian
+                        atas.
                       </p>
                     )}
                     {paymentMethod === "QRIS / e-Wallet" && (
-                      <p style={{ margin: "6px 0 0" }}>
+                      <p>
                         Pada pembayaran sungguhan, pindai kode QR dari penyedia pembayaran.
                         Aplikasi demo ini tidak membuat QR atau memproses transaksi.
                       </p>
                     )}
                     {paymentMethod === "Kartu Debit/Kredit" && (
-                      <p style={{ margin: "6px 0 0" }}>
+                      <p>
                         Pembayaran kartu hanya simulasi. Jangan masukkan atau kirim nomor kartu
                         asli melalui aplikasi ini.
                       </p>
                     )}
                     {paymentMethod === "PayLater" && (
-                      <div style={{ marginTop: "6px" }}>
-                        <p style={{ margin: "0 0 6px" }}>
+                      <div>
+                        <p>
                           Pilih tenor simulasi. Cicilan ini perkiraan tanpa bunga dan tidak
                           membuat pengajuan kredit.
                         </p>
@@ -3774,7 +3669,7 @@ export default function App() {
                           <option value={6}>6 bulan</option>
                           <option value={12}>12 bulan</option>
                         </select>
-                        <p style={{ margin: "6px 0 0" }}>
+                        <p>
                           Perkiraan cicilan:{" "}
                           <strong>
                             {formatRupiah(
@@ -3786,40 +3681,26 @@ export default function App() {
                       </div>
                     )}
                     {paymentMethod === "Tunai / Kasir" && (
-                      <p style={{ margin: "6px 0 0" }}>
+                      <p>
                         Siapkan pembayaran tunai sebesar total tagihan dan bayarkan kepada kasir.
                       </p>
                     )}
-                    <p style={{ margin: "8px 0 0", fontWeight: 700 }}>
-                      Demo saja: checkout akan membuat pesanan, tetapi tidak memverifikasi atau
-                      menerima pembayaran sungguhan.
-                    </p>
+                    {paymentMethod !== "Checkout WhatsApp" && (
+                      <p className="payment-disclaimer">
+                        Demo saja: checkout akan membuat pesanan, tetapi tidak memverifikasi atau
+                        menerima pembayaran sungguhan.
+                      </p>
+                    )}
                   </div>
 
                   <div
-                    style={{
-                      display:
-                        "flex",
-                      justifyContent:
-                        "space-between",
-                      margin:
-                        "12px 0",
-                      fontWeight:
-                        "bold",
-                      fontSize:
-                        "16px",
-                    }}
+                    className="cart-total"
                   >
                     <span>
                       Total Tagihan:
                     </span>
 
-                    <span
-                      style={{
-                        color:
-                          "#3b82f6",
-                      }}
-                    >
+                    <span className="cart-total-amount">
                       {formatRupiah(
                         totalCartPrice
                       )}
@@ -3827,22 +3708,14 @@ export default function App() {
                   </div>
 
                   <button
-                    className="action-btn success"
-                    style={{
-                      width:
-                        "100%",
-                      padding:
-                        "12px",
-                      justifyContent:
-                        "center",
-                      fontSize:
-                        "14px",
-                    }}
+                    className="action-btn success cart-checkout-button"
                     onClick={
                       handleCheckout
                     }
                   >
-                    Checkout Sekarang
+                    {paymentMethod === "Checkout WhatsApp"
+                      ? "Lanjutkan ke WhatsApp"
+                      : "Checkout Sekarang"}
                   </button>
                 </div>
               </>
